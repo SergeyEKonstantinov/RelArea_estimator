@@ -174,8 +174,8 @@ def simulate_matrix(M = 1000, p = 0.001, samples_num = 1000,inclusions_num = 100
     # The main nested cycle provided with time profiler, 
     # so you know how many coffees you you can expect to consume before the script is finished.
     #
-    # Calculation of percentiles for all inclusions from 1 to their max number
-    # averaged over number of randomly picked lxl sections for each inclusion number
+    # Calculating percentiles for all inclusions from 1 to their max number
+    # over number of randomly picked lxl sections for each inclusion number
     for k in tqdm(range(1, inclusions_num + 1)):
         
         areas_prom = np.zeros(samples_num)
@@ -189,9 +189,12 @@ def simulate_matrix(M = 1000, p = 0.001, samples_num = 1000,inclusions_num = 100
         
         # using database is useful for faster statistics
         fullDB = pd.DataFrame({'areas' : areas_prom})
+
+        # recalculating areas to relative errors
         fullDB.areas = (fullDB.areas - trueRelArea) / fullDB.areas * 100
         d = fullDB.areas.describe(percentiles=[0, .05, .125, .5, .45, .55, .875, .95, 1.]) 
-        
+
+        # filling in percentiles
         quants[k - 1, :] = np.array([d['0%'], d['100%'], 
                                      d['5%'], d['95%'], 
                                      d['12.5%'], d['87.5%'], 
